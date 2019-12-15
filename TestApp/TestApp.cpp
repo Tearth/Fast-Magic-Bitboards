@@ -1,8 +1,10 @@
 #include <iostream>
-#include <Header.h>
+#include <FastMagicBitboards.hpp>
 
 int main()
 {
-	TestFun();
-    std::cout << "Hello World!\n"; 
+	auto fastMagicBitboards = new FastMagicBitboards();
+	auto classSizeKilobytes = sizeof(FastMagicBitboards) / 1024;
+
+	fastMagicBitboards->Generate();
 }

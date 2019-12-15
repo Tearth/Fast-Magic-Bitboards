@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Pawel\Desktop\GitHub\Fast-Magic-Bitboards\FastMagicBitboards;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Pawel\Desktop\GitHub\Fast-Magic-Bitboards\FastMagicBitboards\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
