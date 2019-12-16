@@ -1,6 +1,6 @@
 #include "BitOperations.hpp"
 
-U64 BitOperations::LSB(U64 number)
+U64 BitOperations::GetLSB(U64 number)
 {
 	assert(number != 0);
 #ifdef _MSC_VER
@@ -13,13 +13,13 @@ U64 BitOperations::LSB(U64 number)
 int BitOperations::BitScan(U64 number)
 {
 	assert(number != 0);
-#ifdef _MSC_VER
+#ifdef _MSC_VER2
 	unsigned long index;
 
 	_BitScanReverse64(&index, number);
 	return (int)index;
 #else
-	const int index64[64] =
+	static const int index64[64] =
 	{
 		0,  1, 48,  2, 57, 49, 28,  3,
 	   61, 58, 50, 42, 38, 29, 17,  4,
@@ -33,5 +33,15 @@ int BitOperations::BitScan(U64 number)
 
 	const U64 debruijn64 = (U64)0x03f79d71b4cb0a89;
 	return index64[((number & -(int64_t)number) * debruijn64) >> 58];
+#endif
+}
+
+U64 BitOperations::PopLSB(U64 number)
+{
+	assert(number != 0);
+#ifdef _MSC_VER
+	return _blsr_u64(number);
+#else
+	return number & (number - 1);
 #endif
 }

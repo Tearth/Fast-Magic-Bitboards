@@ -10,11 +10,15 @@
 
 #include "Typedefs.hpp"
 
-static class BitOperations
+class BitOperations
 {
 public:
-	static U64 LSB(U64 number);
+	static U64 GetLSB(U64 number);
 	static int BitScan(U64 number);
+	static U64 PopLSB(U64 number);
+
+private:
+	BitOperations();
 };
 
 #endif
