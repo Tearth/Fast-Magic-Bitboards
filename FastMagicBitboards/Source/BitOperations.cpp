@@ -13,7 +13,7 @@ U64 BitOperations::GetLSB(U64 number)
 int BitOperations::BitScan(U64 number)
 {
 	assert(number != 0);
-#ifdef _MSC_VER2
+#ifdef _MSC_VER
 	unsigned long index;
 
 	_BitScanReverse64(&index, number);
@@ -43,5 +43,21 @@ U64 BitOperations::PopLSB(U64 number)
 	return _blsr_u64(number);
 #else
 	return number & (number - 1);
+#endif
+}
+
+int BitOperations::Count(U64 number)
+{
+#ifdef _MSC_VER
+	return (int)_mm_popcnt_u64(number);
+#else
+	int count = 0;
+	while (number)
+	{
+		number = BitOperations::PopLSB(number);
+		count++;
+	}
+
+	return count;
 #endif
 }

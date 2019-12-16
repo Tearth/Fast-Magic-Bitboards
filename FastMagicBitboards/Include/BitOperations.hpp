@@ -16,6 +16,7 @@ public:
 	static U64 GetLSB(U64 number);
 	static int BitScan(U64 number);
 	static U64 PopLSB(U64 number);
+	static int Count(U64 number);
 
 private:
 	BitOperations();
