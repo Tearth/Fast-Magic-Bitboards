@@ -1,10 +1,13 @@
 #include <iostream>
+#include <chrono>
 #include <FastMagicBitboards.hpp>
+#include <BitOperations.hpp>
+
+using namespace std;
+using namespace std::chrono;
 
 int main()
 {
-	auto fastMagicBitboards = new FastMagicBitboards();
-	auto classSizeKilobytes = sizeof(FastMagicBitboards) / 1024;
-
-	fastMagicBitboards->Generate();
+	FastMagicBitboards fastBitboards;
+	fastBitboards.Generate();
 }
