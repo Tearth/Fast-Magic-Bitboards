@@ -6,6 +6,7 @@
 struct MagicStructure
 {
 	U64 Mask;
+	int Offset;
 	U64 MagicNumber;
 };
 

@@ -22,7 +22,7 @@ private:
 	U64 generatePermutation(int permutationIndex, int field, U64 mask);
 	U64 generateRookAttacks(int field, U64 occupancy);
 	U64 generateBishopAttacks(int field, U64 occupancy);
-	U64 generateAttacksForDirection(int field, int shift);
+	U64 generateAttacksForDirection(int field, int shift, U64 occupancy);
 
 	Bitboard _rookAttacks[64][512];
 	Bitboard _bishopAttacks[64][512];
