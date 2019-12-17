@@ -35,8 +35,8 @@ U64 FastMagicBitboards::generateRookMask(int field)
 	const U64 bitboardWithoutFirstAndLastRank = 0xffffffffffff00;
 
 	U64 mask = 0;
-	mask |= (firstFile << (field % 8)) & bitboardWithoutFirstAndLastRank;
-	mask |= (firstRank << ((field / 8) * 8)) & bitboardWithoutFirstAndLastFile;
+	mask |= (firstFile << fieldToFile(field)) & bitboardWithoutFirstAndLastRank;
+	mask |= (firstRank << (fieldToRank(field) * 8)) & bitboardWithoutFirstAndLastFile;
 	mask &= ~((U64)1 << field);
 
 	return mask;
@@ -71,11 +71,20 @@ void FastMagicBitboards::generateAttacks()
 {
 	for (int i = 0; i < 64; i++)
 	{
-		int permutationsCount = 1 << _rookMagicStructures[i].Offset;
-		for (int p = 0; p < permutationsCount; p++)
+		int rookPermutationsCount = 1 << _rookMagicStructures[i].Offset;
+		for (int p = 0; p < rookPermutationsCount; p++)
 		{
 			U64 rookPermutation = generatePermutation(p, i, _rookMagicStructures[i].Mask);
+			_rookAttacks[i] = new Bitboard[rookPermutationsCount];
 			_rookAttacks[i][p] = generateRookAttacks(i, rookPermutation);
+		}
+
+		int bishopPermutationsCount = 1 << _bishopMagicStructures[i].Offset;
+		for (int p = 0; p < bishopPermutationsCount; p++)
+		{
+			U64 bishopPermutation = generatePermutation(p, i, _bishopMagicStructures[i].Mask);
+			_bishopAttacks[i] = new Bitboard[bishopPermutationsCount];
+			_bishopAttacks[i][p] = generateBishopAttacks(i, bishopPermutation);
 		}
 	}
 }
@@ -102,31 +111,62 @@ U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64
 
 U64 FastMagicBitboards::generateRookAttacks(int field, U64 occupancy)
 {
-	const U64 bitboardWithFirstAndLastFile = 0x8181818181818181;
-	const U64 bitboardWithFirstAndLastRank = 0xff000000000000ff;
-
 	U64 attacks = 0;
-	attacks |= field % 8 != 7 ? generateAttacksForDirection(field, 1, occupancy | bitboardWithFirstAndLastFile) : 0;
-	attacks |= field % 8 != 0 ? generateAttacksForDirection(field, -1, occupancy | bitboardWithFirstAndLastFile) : 0;
-	attacks |= field < 56 ? generateAttacksForDirection(field, 8, occupancy | bitboardWithFirstAndLastRank) : 0;
-	attacks |= field > 8 ? generateAttacksForDirection(field, -8, occupancy | bitboardWithFirstAndLastRank) : 0;
+	attacks |= generateAttacksForDirection(field, 1, occupancy);
+	attacks |= generateAttacksForDirection(field, -1, occupancy);
+	attacks |= generateAttacksForDirection(field, 8, occupancy);
+	attacks |= generateAttacksForDirection(field, -8, occupancy);
 
 	return attacks;
 }
 
 U64 FastMagicBitboards::generateBishopAttacks(int field, U64 occupancy)
 {
-	return 0;
+	U64 attacks = 0;
+	attacks |= generateAttacksForDirection(field, 7, occupancy);
+	attacks |= generateAttacksForDirection(field, -7, occupancy);
+	attacks |= generateAttacksForDirection(field, 9, occupancy);
+	attacks |= generateAttacksForDirection(field, -9, occupancy);
+	
+	return attacks;
 }
 
 U64 FastMagicBitboards::generateAttacksForDirection(int field, int shift, U64 occupancy)
 {
 	U64 attacks = 0;
-	do
+	for (int i = distanceToEdge(field, shift); i > 0 && ((U64)1 << field & occupancy) == 0; i--)
 	{
 		field += shift;
 		attacks |= (U64)1 << field;
-	} while (((U64)1 << field & occupancy) == 0);
+	}
 
 	return attacks;
+}
+
+int FastMagicBitboards::distanceToEdge(int field, int shift)
+{
+	switch (shift)
+	{
+	case 1:  return 7 - fieldToFile(field);
+	case -1: return fieldToFile(field);
+	case 8:  return 7 - fieldToRank(field);
+	case -8: return fieldToRank(field);
+	case 9:  return min(7 - fieldToFile(field), 7 - fieldToRank(field));
+	case -7: return min(7 - fieldToFile(field), fieldToRank(field));
+	case -9: return min(fieldToFile(field), fieldToRank(field));
+	case 7:  return min(fieldToFile(field), 7 - fieldToRank(field));
+	}
+
+	assert(1);
+	return -1;
+}
+
+int FastMagicBitboards::fieldToFile(int field)
+{
+	return field % 8;
+}
+
+int FastMagicBitboards::fieldToRank(int field)
+{
+	return field / 8;
 }
