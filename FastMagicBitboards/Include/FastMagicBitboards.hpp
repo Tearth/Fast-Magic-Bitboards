@@ -1,7 +1,9 @@
 #ifndef FAST_MAGIC_BITBOARDS_HPP
 #define FAST_MAGIC_BITBOARDS_HPP
 
+#include <iostream>
 #include <algorithm>
+#include <random>
 #include "Typedefs.hpp"
 #include "MagicStructure.hpp"
 #include "BitOperations.hpp"
@@ -26,10 +28,12 @@ private:
 	U64 generateRookAttacks(int field, U64 occupancy);
 	U64 generateBishopAttacks(int field, U64 occupancy);
 	U64 generateAttacksForDirection(int field, int shift, U64 occupancy);
-	int distanceToEdge(int field, int shift);
+	U64 generateRookMagicNumber(int field, U64 *permutations, int offset);
 
+	int distanceToEdge(int field, int shift);
 	int fieldToFile(int field);
 	int fieldToRank(int field);
+	U64 randU64();
 
 	Bitboard *_rookAttacks[64];
 	Bitboard *_bishopAttacks[64];

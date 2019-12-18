@@ -72,21 +72,33 @@ void FastMagicBitboards::generateAttacks()
 	for (int i = 0; i < 64; i++)
 	{
 		int rookPermutationsCount = 1 << _rookMagicStructures[i].Offset;
+		U64 *permutations = new U64[rookPermutationsCount];
+		_rookAttacks[i] = new Bitboard[rookPermutationsCount];
+
 		for (int p = 0; p < rookPermutationsCount; p++)
 		{
-			U64 rookPermutation = generatePermutation(p, i, _rookMagicStructures[i].Mask);
-			_rookAttacks[i] = new Bitboard[rookPermutationsCount];
-			_rookAttacks[i][p] = generateRookAttacks(i, rookPermutation);
+			permutations[p] = generatePermutation(p, i, _rookMagicStructures[i].Mask);
+			_rookAttacks[i][p] = generateRookAttacks(i, permutations[p]);
 		}
 
+		_rookMagicStructures[i].MagicNumber = generateRookMagicNumber(i, permutations, _rookMagicStructures[i].Offset);
+		delete[] permutations;
+
+		/*
 		int bishopPermutationsCount = 1 << _bishopMagicStructures[i].Offset;
 		for (int p = 0; p < bishopPermutationsCount; p++)
 		{
 			U64 bishopPermutation = generatePermutation(p, i, _bishopMagicStructures[i].Mask);
 			_bishopAttacks[i] = new Bitboard[bishopPermutationsCount];
 			_bishopAttacks[i][p] = generateBishopAttacks(i, bishopPermutation);
-		}
+		}*/
 	}
+
+	U64 occ = 0x1010100010100d0;
+	occ &= _rookMagicStructures[0].Mask;
+	occ *= _rookMagicStructures[0].MagicNumber;
+	occ >>= 64 - _rookMagicStructures[0].Offset;
+	U64 asd2 = _rookAttacks[0][occ];
 }
 
 U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64 mask)
@@ -134,13 +146,55 @@ U64 FastMagicBitboards::generateBishopAttacks(int field, U64 occupancy)
 U64 FastMagicBitboards::generateAttacksForDirection(int field, int shift, U64 occupancy)
 {
 	U64 attacks = 0;
-	for (int i = distanceToEdge(field, shift); i > 0 && ((U64)1 << field & occupancy) == 0; i--)
+	for (int i = distanceToEdge(field, shift); i > 0 && (((U64)1 << field) & occupancy) == 0; i--)
 	{
 		field += shift;
 		attacks |= (U64)1 << field;
 	}
 
 	return attacks;
+}
+
+U64 FastMagicBitboards::generateRookMagicNumber(int field, U64 *permutations, int offset)
+{
+	int attacksCount = 1 << offset;
+	U64 *attackHashes = new U64[attacksCount];
+
+	bool success = false;
+	while (!success)
+	{
+		int a = attacksCount * sizeof(U64);
+		U64 potentialMagicNumber = randU64();
+		memset(attackHashes, 0, attacksCount * sizeof(U64));
+
+		success = true;
+		for (int i = 0; i < attacksCount; i++)
+		{
+			U64 asd = permutations[i];
+			U64 aaa = _rookAttacks[field][i];
+
+			U64 hash = permutations[i] * potentialMagicNumber;
+			int index = hash >> (64 - offset);
+
+			U64 qqq = attackHashes[index];
+			if (attackHashes[index] != 0 && attackHashes[index] != _rookAttacks[field][i])
+			{
+				success = false;
+				break;
+			}
+
+			attackHashes[index] = _rookAttacks[field][i];
+		}
+
+		if (success)
+		{
+			std::cout << potentialMagicNumber;
+			return potentialMagicNumber;
+		}
+	}
+
+	delete[] attackHashes;
+	return -1;
 }
 
 int FastMagicBitboards::distanceToEdge(int field, int shift)
@@ -169,4 +223,13 @@ int FastMagicBitboards::fieldToFile(int field)
 int FastMagicBitboards::fieldToRank(int field)
 {
 	return field / 8;
+}
+
+U64 FastMagicBitboards::randU64()
+{
+	std::random_device rd;
+	std::default_random_engine generator(rd());
+	std::uniform_int_distribution<U64> distribution(0, 0xFFFFFFFFFFFFFFFF);
+
+	return distribution(generator) & distribution(generator) & distribution(generator);
 }
