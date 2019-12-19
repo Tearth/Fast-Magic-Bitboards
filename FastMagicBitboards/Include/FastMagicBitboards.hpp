@@ -2,11 +2,14 @@
 #define FAST_MAGIC_BITBOARDS_HPP
 
 #include <iostream>
-#include <algorithm>
 #include <random>
 #include "Typedefs.hpp"
 #include "MagicStructure.hpp"
 #include "BitOperations.hpp"
+#include "BitboardOperations.hpp"
+#include "AttacksGeneratorBase.hpp"
+#include "RookAttacksGenerator.hpp"
+#include "BishopAttacksGenerator.hpp"
 
 using namespace std;
 
@@ -27,20 +30,17 @@ private:
 	U64 generateRookMask(int field);
 	U64 generateBishopMask(int field);
 	U64 generateMaskForDirection(int field, int shift);
-	void generateAttacks(int field, MagicStructure *pieceMagicStructures, U64 (FastMagicBitboards::*attacksGenerator)(int, U64));
+	void calculateField(int field, MagicStructure *pieceMagicStructures, AttacksGeneratorBase *attacksGenerator);
 	U64 generatePermutation(int permutationIndex, int field, U64 mask);
-	U64 generateRookAttacks(int field, U64 occupancy);
-	U64 generateBishopAttacks(int field, U64 occupancy);
-	U64 generateAttacksForDirection(int field, int shift, U64 occupancy);
 	U64 generateMagicNumber(MagicStructure *pieceMagicStructures, U64 *permutations, Bitboard *attacks);
 
-	int distanceToEdge(int field, int shift);
-	int fieldToFile(int field);
-	int fieldToRank(int field);
 	U64 randU64();
 
 	MagicStructure _rookMagicStructures[64];
 	MagicStructure _bishopMagicStructures[64];
+
+	AttacksGeneratorBase *rookAttacksGenerator;
+	AttacksGeneratorBase *bishopAttacksGenerator;
 
 	std::random_device _randomDevice;
 	std::default_random_engine _randomGenerator;

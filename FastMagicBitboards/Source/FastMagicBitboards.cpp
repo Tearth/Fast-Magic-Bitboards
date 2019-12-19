@@ -2,6 +2,9 @@
 
 FastMagicBitboards::FastMagicBitboards() : _randomGenerator(_randomDevice()), _randomDistribution(0, 0x3ffffffffffffff)
 {
+	rookAttacksGenerator = new RookAttacksGenerator();
+	bishopAttacksGenerator = new BishopAttacksGenerator();
+
 	memset(_rookMagicStructures, 0, sizeof(MagicStructure) * 64);
 	memset(_bishopMagicStructures, 0, sizeof(MagicStructure) * 64);
 }
@@ -24,7 +27,7 @@ void FastMagicBitboards::GenerateForRook(int field)
 	assert(field >= 0 && field < 64);
 
 	_rookMagicStructures[field].Mask = generateRookMask(field);
-	generateAttacks(field, _rookMagicStructures, &FastMagicBitboards::generateRookAttacks);
+	calculateField(field, _rookMagicStructures, rookAttacksGenerator);
 }
 
 void FastMagicBitboards::GenerateForBishop()
@@ -40,7 +43,7 @@ void FastMagicBitboards::GenerateForBishop(int field)
 	assert(field >= 0 && field < 64);
 
 	_bishopMagicStructures[field].Mask = generateBishopMask(field);
-	generateAttacks(field, _bishopMagicStructures, &FastMagicBitboards::generateBishopAttacks);
+	calculateField(field, _bishopMagicStructures, bishopAttacksGenerator);
 }
 
 Bitboard FastMagicBitboards::GetRookAttacks(int field, Bitboard occupancy)
@@ -73,8 +76,8 @@ U64 FastMagicBitboards::generateRookMask(int field)
 	const U64 bitboardWithoutFirstAndLastRank = 0xffffffffffff00;
 
 	U64 mask = 0;
-	mask |= (firstFile << fieldToFile(field)) & bitboardWithoutFirstAndLastRank;
-	mask |= (firstRank << (fieldToRank(field) * 8)) & bitboardWithoutFirstAndLastFile;
+	mask |= (firstFile << BitboardOperations::FieldToFile(field)) & bitboardWithoutFirstAndLastRank;
+	mask |= (firstRank << (BitboardOperations::FieldToRank(field) * 8)) & bitboardWithoutFirstAndLastFile;
 	mask &= ~((U64)1 << field);
 
 	return mask;
@@ -110,7 +113,7 @@ U64 FastMagicBitboards::generateMaskForDirection(int field, int shift)
 	return mask;
 }
 
-void FastMagicBitboards::generateAttacks(int field, MagicStructure *pieceMagicStructures, U64 (FastMagicBitboards::*attacksGenerator)(int, U64))
+void FastMagicBitboards::calculateField(int field, MagicStructure *pieceMagicStructures, AttacksGeneratorBase *attacksGenerator)
 {
 	assert(field >= 0 && field < 64);
 
@@ -121,7 +124,7 @@ void FastMagicBitboards::generateAttacks(int field, MagicStructure *pieceMagicSt
 	for (int p = 0; p < permutationsCount; p++)
 	{
 		permutations[p] = generatePermutation(p, field, pieceMagicStructures[field].Mask);
-		attacks[p] = (this->*attacksGenerator)(field, permutations[p]);
+		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
 	}
 
 	pieceMagicStructures[field].MagicNumber = generateMagicNumber(&pieceMagicStructures[field], permutations, attacks);
@@ -150,47 +153,6 @@ U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64
 	}
 
 	return permutation;
-}
-
-U64 FastMagicBitboards::generateRookAttacks(int field, U64 occupancy)
-{
-	assert(field >= 0 && field < 64);
-
-	U64 attacks = 0;
-	attacks |= generateAttacksForDirection(field, 1, occupancy);
-	attacks |= generateAttacksForDirection(field, -1, occupancy);
-	attacks |= generateAttacksForDirection(field, 8, occupancy);
-	attacks |= generateAttacksForDirection(field, -8, occupancy);
-
-	return attacks;
-}
-
-U64 FastMagicBitboards::generateBishopAttacks(int field, U64 occupancy)
-{
-	assert(field >= 0 && field < 64);
-
-	U64 attacks = 0;
-	attacks |= generateAttacksForDirection(field, 7, occupancy);
-	attacks |= generateAttacksForDirection(field, -7, occupancy);
-	attacks |= generateAttacksForDirection(field, 9, occupancy);
-	attacks |= generateAttacksForDirection(field, -9, occupancy);
-	
-	return attacks;
-}
-
-U64 FastMagicBitboards::generateAttacksForDirection(int field, int shift, U64 occupancy)
-{
-	assert(field >= 0 && field < 64);
-	assert(shift != 0);
-
-	U64 attacks = 0;
-	for (int i = distanceToEdge(field, shift); i > 0 && (((U64)1 << field) & occupancy) == 0; i--)
-	{
-		field += shift;
-		attacks |= (U64)1 << field;
-	}
-
-	return attacks;
 }
 
 U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures, U64 *permutations, Bitboard *attacks)
@@ -234,41 +196,6 @@ U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures
 	}
 
 	return -1;
-}
-
-int FastMagicBitboards::distanceToEdge(int field, int shift)
-{
-	assert(field >= 0 && field < 64);
-	assert(shift != 0);
-
-	int distance;
-	switch (shift)
-	{
-	case 1:  distance = 7 - fieldToFile(field); break;
-	case -1: distance = fieldToFile(field); break;
-	case 8:  distance = 7 - fieldToRank(field); break;
-	case -8: distance = fieldToRank(field); break;
-	case 9:  distance = min(7 - fieldToFile(field), 7 - fieldToRank(field)); break;
-	case -7: distance = min(7 - fieldToFile(field), fieldToRank(field)); break;
-	case -9: distance = min(fieldToFile(field), fieldToRank(field)); break;
-	case 7:  distance = min(fieldToFile(field), 7 - fieldToRank(field)); break;
-	default: distance = -1; break;
-	}
-
-	assert(distance != -1);
-	return distance;
-}
-
-int FastMagicBitboards::fieldToFile(int field)
-{
-	assert(field >= 0 && field < 64);
-	return field % 8;
-}
-
-int FastMagicBitboards::fieldToRank(int field)
-{
-	assert(field >= 0 && field < 64);
-	return field / 8;
 }
 
 U64 FastMagicBitboards::randU64()

@@ -13,13 +13,37 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{d0009043-58c9-4320-9dbd-f2fa7ccd1ad5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Attacks">
+      <UniqueIdentifier>{c6b044a5-0695-4a94-859d-0dc5080feea4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Helpers">
+      <UniqueIdentifier>{0d1c762a-8dd3-444e-8ed6-b46255263c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Attacks">
+      <UniqueIdentifier>{c9db41e5-2495-4be4-a8ba-b230a96e379f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\FastMagicBitboards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\AttacksGeneratorBase.cpp">
+      <Filter>Source Files\Attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BishopAttacksGenerator.cpp">
+      <Filter>Source Files\Attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RookAttacksGenerator.cpp">
+      <Filter>Source Files\Attacks</Filter>
+    </ClCompile>
     <ClCompile Include="Source\BitOperations.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BitboardOperations.cpp">
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -29,11 +53,23 @@
     <ClInclude Include="Include\MagicStructure.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\Typedefs.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\AttacksGeneratorBase.hpp">
+      <Filter>Header Files\Attacks</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RookAttacksGenerator.hpp">
+      <Filter>Header Files\Attacks</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BishopAttacksGenerator.hpp">
+      <Filter>Header Files\Attacks</Filter>
     </ClInclude>
     <ClInclude Include="Include\BitOperations.hpp">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Typedefs.hpp">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BitboardOperations.hpp">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

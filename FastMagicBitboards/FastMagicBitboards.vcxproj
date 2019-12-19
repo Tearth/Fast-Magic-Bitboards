@@ -19,14 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\AttacksGeneratorBase.cpp" />
+    <ClCompile Include="Source\BishopAttacksGenerator.cpp" />
+    <ClCompile Include="Source\BitboardOperations.cpp" />
     <ClCompile Include="Source\BitOperations.cpp" />
     <ClCompile Include="Source\FastMagicBitboards.cpp" />
+    <ClCompile Include="Source\RookAttacksGenerator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BitOperations.hpp" />
     <ClInclude Include="Include\FastMagicBitboards.hpp" />
     <ClInclude Include="Include\MagicStructure.hpp" />
     <ClInclude Include="Include\Typedefs.hpp" />
+    <ClInclude Include="Include\AttacksGeneratorBase.hpp" />
+    <ClInclude Include="Include\BishopAttacksGenerator.hpp" />
+    <ClInclude Include="Include\RookAttacksGenerator.hpp" />
+    <ClInclude Include="Include\BitboardOperations.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
