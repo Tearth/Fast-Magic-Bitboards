@@ -20,6 +20,9 @@ public:
 	void GenerateForRook(int field);
 	void GenerateForBishop();
 	void GenerateForBishop(int field);
+
+	Bitboard GetRookAttacks(int field, Bitboard occupancy);
+	Bitboard GetBishopAttacks(int field, Bitboard occupancy);
 private:
 	U64 generateRookMask(int field);
 	U64 generateBishopMask(int field);

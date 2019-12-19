@@ -43,6 +43,22 @@ void FastMagicBitboards::GenerateForBishop(int field)
 	generateAttacks(field, _bishopMagicStructures, _bishopMagicAttacks, &FastMagicBitboards::generateBishopAttacks);
 }
 
+Bitboard FastMagicBitboards::GetRookAttacks(int field, Bitboard occupancy)
+{
+	occupancy &= _rookMagicStructures[field].Mask;
+	occupancy *= _rookMagicStructures[field].MagicNumber;
+	occupancy >>= 64 - _rookMagicStructures[field].Shift;
+	return _rookMagicAttacks[field][occupancy];
+}
+
+Bitboard FastMagicBitboards::GetBishopAttacks(int field, Bitboard occupancy)
+{
+	occupancy &= _bishopMagicStructures[field].Mask;
+	occupancy *= _bishopMagicStructures[field].MagicNumber;
+	occupancy >>= 64 - _bishopMagicStructures[field].Shift;
+	return _bishopMagicAttacks[field][occupancy];
+}
+
 U64 FastMagicBitboards::generateRookMask(int field)
 {
 	const U64 firstFile = 0x101010101010101;
