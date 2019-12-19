@@ -2,8 +2,12 @@
 
 int BitboardOperations::DistanceToEdge(int field, int shift)
 {
-	assert(field >= 0 && field < 64);
 	assert(shift != 0);
+
+	if (field < 0 || field >= 64)
+	{
+		return -1;
+	}
 
 	int distance;
 	switch (shift)

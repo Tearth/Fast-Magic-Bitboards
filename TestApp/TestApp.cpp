@@ -21,11 +21,11 @@ int main()
 		cout << "GenTime: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << " ms, ";
 
 		auto start2 = chrono::steady_clock::now();
-		auto sum = 0;
+		U64 sum = 0;
 		for (int i = 0; i < 1000000000; i++)
 		{
-			uint64_t testOccupancy = 0xc0f900050000f834 + i;
-			sum += fastBitboards->GetRookAttacks(0, testOccupancy);
+		//	uint64_t testOccupancy = 0xc0f900050000f834 + i;
+		//	sum += fastBitboards->GetRookAttacks(0, testOccupancy);
 		}
 		auto end2 = chrono::steady_clock::now();
 		trap = sum;

@@ -2,16 +2,13 @@
 
 FastMagicBitboards::FastMagicBitboards() : _randomGenerator(_randomDevice()), _randomDistribution(0, 0x3ffffffffffffff)
 {
-	rookAttacksGenerator = new RookAttacksGenerator();
-	bishopAttacksGenerator = new BishopAttacksGenerator();
-
-	memset(_rookMagicStructures, 0, sizeof(MagicStructure) * 64);
-	memset(_bishopMagicStructures, 0, sizeof(MagicStructure) * 64);
+	rookAttacksGenerator = make_unique<RookAttacksGenerator>();
+	bishopAttacksGenerator = make_unique<BishopAttacksGenerator>();
 }
 
 FastMagicBitboards::~FastMagicBitboards()
 {
-
+	
 }
 
 void FastMagicBitboards::GenerateForRook()
@@ -98,13 +95,10 @@ U64 FastMagicBitboards::generateBishopMask(int field)
 
 U64 FastMagicBitboards::generateMaskForDirection(int field, int shift)
 {
-	assert(field >= 0 && field < 64);
 	assert(shift != 0);
 
-	const U64 bitboardEdges = 0xff818181818181ff;
-
 	U64 mask = 0;
-	while (((U64)1 << field & bitboardEdges) == 0)
+	for (int i = BitboardOperations::DistanceToEdge(field, shift); i >= 0; i--)
 	{
 		mask |= (U64)1 << field;
 		field += shift;
@@ -113,13 +107,13 @@ U64 FastMagicBitboards::generateMaskForDirection(int field, int shift)
 	return mask;
 }
 
-void FastMagicBitboards::calculateField(int field, MagicStructure *pieceMagicStructures, AttacksGeneratorBase *attacksGenerator)
+void FastMagicBitboards::calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, unique_ptr<AttacksGeneratorBase> &attacksGenerator)
 {
 	assert(field >= 0 && field < 64);
 
 	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures[field].Mask);
-	U64 *permutations = new U64[permutationsCount];
-	U64 *attacks = new U64[permutationsCount];
+	auto permutations = std::make_unique<U64 []>(permutationsCount);
+	auto attacks = std::make_unique<U64[]>(permutationsCount);
 
 	for (int p = 0; p < permutationsCount; p++)
 	{
@@ -127,9 +121,7 @@ void FastMagicBitboards::calculateField(int field, MagicStructure *pieceMagicStr
 		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
 	}
 
-	pieceMagicStructures[field].MagicNumber = generateMagicNumber(&pieceMagicStructures[field], permutations, attacks);
-	delete[] permutations;
-	delete[] attacks;
+	pieceMagicStructures[field].MagicNumber = generateMagicNumber(pieceMagicStructures[field], permutations, attacks);
 }
 
 U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64 mask)
@@ -155,24 +147,20 @@ U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64
 	return permutation;
 }
 
-U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures, U64 *permutations, Bitboard *attacks)
+U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
 {
-	int attacksCount = 1 << BitOperations::Count(pieceMagicStructures->Mask);
-	int shift = BitOperations::Count(pieceMagicStructures->Mask);
+	int attacksCount = 1 << BitOperations::Count(pieceMagicStructures.Mask);
+	int shift = BitOperations::Count(pieceMagicStructures.Mask);
 	bool success = false;
 
-	if (pieceMagicStructures->MagicAttacks != nullptr)
-	{
-		delete[] pieceMagicStructures->MagicAttacks;
-	}
-	pieceMagicStructures->MagicAttacks = new Bitboard[(int)(1 << shift)];
+	pieceMagicStructures.MagicAttacks = std::make_unique<Bitboard []>((int)(1 << shift));
 
 	while (!success)
 	{
 		U64 magicNumber = randU64() & randU64() & randU64();
 		magicNumber |= ((U64)64 - shift) << 58;
 
-		memset(pieceMagicStructures->MagicAttacks, 0, attacksCount * sizeof(Bitboard));
+		memset(pieceMagicStructures.MagicAttacks.get(), 0, attacksCount * sizeof(Bitboard));
 
 		success = true;
 		for (int i = 0; i < attacksCount; i++)
@@ -180,13 +168,13 @@ U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures
 			U64 hash = permutations[i] * magicNumber;
 			int index = (int)(hash >> (64 - shift));
 
-			if (pieceMagicStructures->MagicAttacks[index] != 0 && pieceMagicStructures->MagicAttacks[index] != attacks[i])
+			if (pieceMagicStructures.MagicAttacks[index] != 0 && pieceMagicStructures.MagicAttacks[index] != attacks[i])
 			{
 				success = false;
 				break;
 			}
 
-			pieceMagicStructures->MagicAttacks[index] = attacks[i];
+			pieceMagicStructures.MagicAttacks[index] = attacks[i];
 		}
 
 		if (success)

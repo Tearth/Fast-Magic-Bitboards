@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <random>
+#include <array>
+#include <algorithm>
 #include "Typedefs.hpp"
 #include "MagicStructure.hpp"
 #include "BitOperations.hpp"
@@ -30,17 +32,17 @@ private:
 	U64 generateRookMask(int field);
 	U64 generateBishopMask(int field);
 	U64 generateMaskForDirection(int field, int shift);
-	void calculateField(int field, MagicStructure *pieceMagicStructures, AttacksGeneratorBase *attacksGenerator);
+	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, unique_ptr<AttacksGeneratorBase> &attacksGenerator);
 	U64 generatePermutation(int permutationIndex, int field, U64 mask);
-	U64 generateMagicNumber(MagicStructure *pieceMagicStructures, U64 *permutations, Bitboard *attacks);
+	U64 generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
 
 	U64 randU64();
 
-	MagicStructure _rookMagicStructures[64];
-	MagicStructure _bishopMagicStructures[64];
+	std::array<MagicStructure, 64> _rookMagicStructures;
+	std::array<MagicStructure, 64> _bishopMagicStructures;
 
-	AttacksGeneratorBase *rookAttacksGenerator;
-	AttacksGeneratorBase *bishopAttacksGenerator;
+	unique_ptr<AttacksGeneratorBase> rookAttacksGenerator;
+	unique_ptr<AttacksGeneratorBase> bishopAttacksGenerator;
 
 	std::random_device _randomDevice;
 	std::default_random_engine _randomGenerator;
