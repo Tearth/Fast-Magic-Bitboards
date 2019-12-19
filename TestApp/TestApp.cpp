@@ -5,9 +5,9 @@
 
 using namespace std;
 using namespace std::chrono;
-
 int main()
 {
 	FastMagicBitboards fastBitboards;
-	fastBitboards.Generate();
+	fastBitboards.GenerateForRook(0);
+	fastBitboards.GenerateForBishop(0);
 }
