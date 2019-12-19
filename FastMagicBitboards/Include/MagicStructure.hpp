@@ -6,8 +6,8 @@
 struct MagicStructure
 {
 	U64 Mask;
-	int Shift;
 	U64 MagicNumber;
+	Bitboard *MagicAttacks;
 };
 
 #endif
