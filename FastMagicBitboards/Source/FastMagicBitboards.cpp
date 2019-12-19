@@ -2,6 +2,7 @@
 
 FastMagicBitboards::FastMagicBitboards()
 {
+
 }
 
 FastMagicBitboards::~FastMagicBitboards()
@@ -79,7 +80,7 @@ void FastMagicBitboards::generateAttacks(int field, MagicStructure *pieceMagicSt
 		attacks[p] = (this->*attacksGenerator)(field, permutations[p]);
 	}
 
-	_rookMagicStructures[field].MagicNumber = generateMagicNumber(&_rookMagicStructures[field], _rookMagicAttacks[field], permutations, attacks);
+	pieceMagicStructures[field].MagicNumber = generateMagicNumber(&pieceMagicStructures[field], pieceAttacks[field], permutations, attacks);
 	delete[] permutations;
 	delete[] attacks;
 }

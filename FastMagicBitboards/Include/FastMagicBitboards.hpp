@@ -16,7 +16,6 @@ public:
 	FastMagicBitboards();
 	~FastMagicBitboards();
 
-	void Generate();
 	void GenerateForRook(int field);
 	void GenerateForBishop(int field);
 private:

@@ -10,4 +10,6 @@ int main()
 	FastMagicBitboards fastBitboards;
 	fastBitboards.GenerateForRook(0);
 	fastBitboards.GenerateForBishop(0);
+
+	system("pause");
 }
