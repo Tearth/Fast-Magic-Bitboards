@@ -40,6 +40,10 @@ private:
 	Bitboard *_bishopMagicAttacks[64];
 	MagicStructure _rookMagicStructures[64];
 	MagicStructure _bishopMagicStructures[64];
+
+	std::random_device randomDevice;
+	std::default_random_engine randomGenerator;
+	std::uniform_int_distribution<U64> randomDistribution;
 };
 
 #endif

@@ -1,6 +1,6 @@
 #include "FastMagicBitboards.hpp"
 
-FastMagicBitboards::FastMagicBitboards()
+FastMagicBitboards::FastMagicBitboards() : randomGenerator(randomDevice()), randomDistribution(0, UINT64_MAX)
 {
 	memset(_rookMagicAttacks, 0, sizeof(Bitboard *) * 64);
 	memset(_bishopMagicAttacks, 0, sizeof(Bitboard *) * 64);
@@ -163,11 +163,11 @@ U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures
 	{
 		delete[] *pieceMagicAttacks;
 	}
-	*pieceMagicAttacks = new Bitboard[1 << pieceMagicStructures->Shift];
+	*pieceMagicAttacks = new Bitboard[(int)(1 << pieceMagicStructures->Shift)];
 
 	while (!success)
 	{
-		U64 magicNumber = randU64();
+		U64 magicNumber = randU64() & randU64() & randU64();
 		memset(*pieceMagicAttacks, 0, attacksCount * sizeof(Bitboard));
 
 		success = true;
@@ -224,9 +224,5 @@ int FastMagicBitboards::fieldToRank(int field)
 
 U64 FastMagicBitboards::randU64()
 {
-	std::random_device rd;
-	std::default_random_engine generator(rd());
-	std::uniform_int_distribution<U64> distribution(0, 0xFFFFFFFFFFFFFFFF);
-
-	return distribution(generator) & distribution(generator) & distribution(generator);
+	return randomDistribution(randomGenerator);
 }
