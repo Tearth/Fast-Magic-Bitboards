@@ -2,7 +2,10 @@
 
 FastMagicBitboards::FastMagicBitboards()
 {
-
+	memset(_rookMagicAttacks, 0, sizeof(Bitboard *) * 64);
+	memset(_bishopMagicAttacks, 0, sizeof(Bitboard *) * 64);
+	memset(_rookMagicStructures, 0, sizeof(MagicStructure) * 64);
+	memset(_bishopMagicStructures, 0, sizeof(MagicStructure) * 64);
 }
 
 FastMagicBitboards::~FastMagicBitboards()
@@ -10,13 +13,27 @@ FastMagicBitboards::~FastMagicBitboards()
 
 }
 
+void FastMagicBitboards::GenerateForRook()
+{
+	for (int i = 0; i < 64; i++)
+	{
+		GenerateForRook(i);
+	}
+}
+
 void FastMagicBitboards::GenerateForRook(int field)
 {
 	_rookMagicStructures[field].Mask = generateRookMask(field);
 	_rookMagicStructures[field].Shift = BitOperations::Count(_rookMagicStructures[field].Mask);
 	generateAttacks(field, _rookMagicStructures, _rookMagicAttacks, &FastMagicBitboards::generateRookAttacks);
+}
 
-	std::cout << _rookMagicStructures[field].MagicNumber << endl;
+void FastMagicBitboards::GenerateForBishop()
+{
+	for (int i = 0; i < 64; i++)
+	{
+		GenerateForBishop(i);
+	}
 }
 
 void FastMagicBitboards::GenerateForBishop(int field)
@@ -24,8 +41,6 @@ void FastMagicBitboards::GenerateForBishop(int field)
 	_bishopMagicStructures[field].Mask = generateBishopMask(field);
 	_bishopMagicStructures[field].Shift = BitOperations::Count(_bishopMagicStructures[field].Mask);
 	generateAttacks(field, _bishopMagicStructures, _bishopMagicAttacks, &FastMagicBitboards::generateBishopAttacks);
-
-	std::cout << _bishopMagicStructures[field].MagicNumber << endl;
 }
 
 U64 FastMagicBitboards::generateRookMask(int field)
@@ -80,7 +95,7 @@ void FastMagicBitboards::generateAttacks(int field, MagicStructure *pieceMagicSt
 		attacks[p] = (this->*attacksGenerator)(field, permutations[p]);
 	}
 
-	pieceMagicStructures[field].MagicNumber = generateMagicNumber(&pieceMagicStructures[field], pieceAttacks[field], permutations, attacks);
+	pieceMagicStructures[field].MagicNumber = generateMagicNumber(&pieceMagicStructures[field], &pieceAttacks[field], permutations, attacks);
 	delete[] permutations;
 	delete[] attacks;
 }
@@ -139,16 +154,21 @@ U64 FastMagicBitboards::generateAttacksForDirection(int field, int shift, U64 oc
 	return attacks;
 }
 
-U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures, Bitboard *pieceMagicAttacks, U64 *permutations, Bitboard *attacks)
+U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures, Bitboard **pieceMagicAttacks, U64 *permutations, Bitboard *attacks)
 {
 	int attacksCount = 1 << BitOperations::Count(pieceMagicStructures->Mask);
-	pieceMagicAttacks = new Bitboard[1 << pieceMagicStructures->Shift];
 	bool success = false;
+
+	if (*pieceMagicAttacks != nullptr)
+	{
+		delete[] *pieceMagicAttacks;
+	}
+	*pieceMagicAttacks = new Bitboard[1 << pieceMagicStructures->Shift];
 
 	while (!success)
 	{
 		U64 magicNumber = randU64();
-		memset(pieceMagicAttacks, 0, attacksCount * sizeof(U64));
+		memset(*pieceMagicAttacks, 0, attacksCount * sizeof(Bitboard));
 
 		success = true;
 		for (int i = 0; i < attacksCount; i++)
@@ -156,13 +176,13 @@ U64 FastMagicBitboards::generateMagicNumber(MagicStructure *pieceMagicStructures
 			U64 hash = permutations[i] * magicNumber;
 			int index = (int)(hash >> (64 - pieceMagicStructures->Shift));
 
-			if (pieceMagicAttacks[index] != 0 && pieceMagicAttacks[index] != attacks[i])
+			if ((*pieceMagicAttacks)[index] != 0 && (*pieceMagicAttacks)[index] != attacks[i])
 			{
 				success = false;
 				break;
 			}
 
-			pieceMagicAttacks[index] = attacks[i];
+			(*pieceMagicAttacks)[index] = attacks[i];
 		}
 
 		if (success)

@@ -16,7 +16,9 @@ public:
 	FastMagicBitboards();
 	~FastMagicBitboards();
 
+	void GenerateForRook();
 	void GenerateForRook(int field);
+	void GenerateForBishop();
 	void GenerateForBishop(int field);
 private:
 	U64 generateRookMask(int field);
@@ -27,7 +29,7 @@ private:
 	U64 generateRookAttacks(int field, U64 occupancy);
 	U64 generateBishopAttacks(int field, U64 occupancy);
 	U64 generateAttacksForDirection(int field, int shift, U64 occupancy);
-	U64 generateMagicNumber(MagicStructure *pieceMagicStructures, Bitboard *pieceMagicAttacks, U64 *permutations, Bitboard *attacks);
+	U64 generateMagicNumber(MagicStructure *pieceMagicStructures, Bitboard **pieceMagicAttacks, U64 *permutations, Bitboard *attacks);
 
 	int distanceToEdge(int field, int shift);
 	int fieldToFile(int field);

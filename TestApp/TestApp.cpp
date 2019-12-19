@@ -5,11 +5,18 @@
 
 using namespace std;
 using namespace std::chrono;
+
 int main()
 {
-	FastMagicBitboards fastBitboards;
-	fastBitboards.GenerateForRook(0);
-	fastBitboards.GenerateForBishop(0);
+	FastMagicBitboards *fastBitboards = new FastMagicBitboards();
 
-	system("pause");
+	while (1)
+	{
+		auto start = chrono::steady_clock::now();
+		fastBitboards->GenerateForRook();
+		fastBitboards->GenerateForBishop();
+		auto end = chrono::steady_clock::now();
+
+		cout << "Time: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << endl;
+	}
 }
