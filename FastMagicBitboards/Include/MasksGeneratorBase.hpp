@@ -9,6 +9,9 @@ class MasksGeneratorBase
 {
 public:
 	virtual U64 Generate(int field) = 0;
+
+protected:
+	U64 generateMaskForDirection(int field, int shift);
 };
 
 #endif

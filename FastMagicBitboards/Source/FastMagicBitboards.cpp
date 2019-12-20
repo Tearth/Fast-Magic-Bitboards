@@ -37,7 +37,7 @@ void FastMagicBitboards::GenerateForBishop(int field)
 	calculateField(field, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
 }
 
-Bitboard FastMagicBitboards::GetRookAttacks(int field, Bitboard occupancy)
+U64 FastMagicBitboards::GetRookAttacks(int field, U64 occupancy)
 {
 	assert(field >= 0 && field < 64);
 
@@ -47,7 +47,7 @@ Bitboard FastMagicBitboards::GetRookAttacks(int field, Bitboard occupancy)
 	return _rookMagicStructures[field].MagicAttacks[occupancy];
 }
 
-Bitboard FastMagicBitboards::GetBishopAttacks(int field, Bitboard occupancy)
+U64 FastMagicBitboards::GetBishopAttacks(int field, U64 occupancy)
 {
 	assert(field >= 0 && field < 64);
 
@@ -81,7 +81,7 @@ U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures
 	int shift = BitOperations::Count(pieceMagicStructures.Mask);
 	int magicOffset = 64 - shift;
 
-	pieceMagicStructures.MagicAttacks = std::make_unique<Bitboard []>((int)(1 << shift));
+	pieceMagicStructures.MagicAttacks = std::make_unique<U64[]>((int)(1 << shift));
 
 	bool success = false;
 	while (!success)
@@ -89,7 +89,7 @@ U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures
 		U64 magicNumber = randU64() & randU64() & randU64();
 		magicNumber |= (U64)magicOffset << 58;
 
-		memset(pieceMagicStructures.MagicAttacks.get(), 0, attacksCount * sizeof(Bitboard));
+		memset(pieceMagicStructures.MagicAttacks.get(), 0, attacksCount * sizeof(U64));
 
 		success = true;
 		for (int i = 0; i < attacksCount; i++)

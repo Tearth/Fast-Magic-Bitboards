@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-typedef uint64_t U64, Bitboard;
+typedef uint64_t U64;
 
 #endif

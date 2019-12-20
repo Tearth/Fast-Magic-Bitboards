@@ -7,7 +7,7 @@ struct MagicStructure
 {
 	U64 Mask;
 	U64 MagicNumber;
-	std::unique_ptr<Bitboard []> MagicAttacks;
+	std::unique_ptr<U64[]> MagicAttacks;
 };
 
 #endif

@@ -27,8 +27,8 @@ public:
 	void GenerateForBishop();
 	void GenerateForBishop(int field);
 
-	Bitboard GetRookAttacks(int field, Bitboard occupancy);
-	Bitboard GetBishopAttacks(int field, Bitboard occupancy);
+	U64 GetRookAttacks(int field, U64 occupancy);
+	U64 GetBishopAttacks(int field, U64 occupancy);
 private:
 	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
 	U64 generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
@@ -45,7 +45,7 @@ private:
 	std::unique_ptr<AttacksGeneratorBase> bishopAttacksGenerator;
 
 	std::random_device _randomDevice;
-	std::default_random_engine _randomGenerator;
+	std::mt19937_64 _randomGenerator;
 	std::uniform_int_distribution<U64> _randomDistribution;
 };
 
