@@ -5,8 +5,6 @@
 #include "Typedefs.hpp"
 #include "BitboardOperations.hpp"
 
-using namespace std;
-
 class AttacksGeneratorBase
 {
 public:

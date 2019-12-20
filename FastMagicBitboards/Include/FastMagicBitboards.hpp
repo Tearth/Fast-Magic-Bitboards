@@ -13,8 +13,6 @@
 #include "RookAttacksGenerator.hpp"
 #include "BishopAttacksGenerator.hpp"
 
-using namespace std;
-
 class FastMagicBitboards
 {
 public:
@@ -32,7 +30,7 @@ private:
 	U64 generateRookMask(int field);
 	U64 generateBishopMask(int field);
 	U64 generateMaskForDirection(int field, int shift);
-	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, unique_ptr<AttacksGeneratorBase> &attacksGenerator);
+	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator);
 	U64 generatePermutation(int permutationIndex, int field, U64 mask);
 	U64 generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
 
@@ -41,8 +39,8 @@ private:
 	std::array<MagicStructure, 64> _rookMagicStructures;
 	std::array<MagicStructure, 64> _bishopMagicStructures;
 
-	unique_ptr<AttacksGeneratorBase> rookAttacksGenerator;
-	unique_ptr<AttacksGeneratorBase> bishopAttacksGenerator;
+	std::unique_ptr<AttacksGeneratorBase> rookAttacksGenerator;
+	std::unique_ptr<AttacksGeneratorBase> bishopAttacksGenerator;
 
 	std::random_device _randomDevice;
 	std::default_random_engine _randomGenerator;
