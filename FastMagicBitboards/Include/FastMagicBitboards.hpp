@@ -15,12 +15,12 @@
 #include "MasksGeneratorBase.hpp"
 #include "RookMasksGenerator.hpp"
 #include "BishopMasksGenerator.hpp"
+#include "Permutations.hpp"
 
 class FastMagicBitboards
 {
 public:
 	FastMagicBitboards();
-	~FastMagicBitboards();
 
 	void GenerateForRook();
 	void GenerateForRook(int field);
@@ -31,7 +31,6 @@ public:
 	Bitboard GetBishopAttacks(int field, Bitboard occupancy);
 private:
 	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
-	U64 generatePermutation(int permutationIndex, int field, U64 mask);
 	U64 generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
 
 	U64 randU64();

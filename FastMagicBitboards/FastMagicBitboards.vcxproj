@@ -26,6 +26,7 @@
     <ClCompile Include="Source\BitOperations.cpp" />
     <ClCompile Include="Source\FastMagicBitboards.cpp" />
     <ClCompile Include="Source\MasksGeneratorBase.cpp" />
+    <ClCompile Include="Source\Permutations.cpp" />
     <ClCompile Include="Source\RookAttacksGenerator.cpp" />
     <ClCompile Include="Source\RookMasksGenerator.cpp" />
   </ItemGroup>
@@ -35,6 +36,7 @@
     <ClInclude Include="Include\FastMagicBitboards.hpp" />
     <ClInclude Include="Include\MagicStructure.hpp" />
     <ClInclude Include="Include\MasksGeneratorBase.hpp" />
+    <ClInclude Include="Include\Permutations.hpp" />
     <ClInclude Include="Include\RookMasksGenerator.hpp" />
     <ClInclude Include="Include\Typedefs.hpp" />
     <ClInclude Include="Include\AttacksGeneratorBase.hpp" />

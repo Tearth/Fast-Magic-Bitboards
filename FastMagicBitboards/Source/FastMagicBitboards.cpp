@@ -9,11 +9,6 @@ FastMagicBitboards::FastMagicBitboards() : _randomGenerator(_randomDevice()), _r
 	bishopAttacksGenerator = std::make_unique<BishopAttacksGenerator>();
 }
 
-FastMagicBitboards::~FastMagicBitboards()
-{
-	
-}
-
 void FastMagicBitboards::GenerateForRook()
 {
 	for (int i = 0; i < 64; i++)
@@ -73,34 +68,11 @@ void FastMagicBitboards::calculateField(int field, std::array<MagicStructure, 64
 
 	for (int p = 0; p < permutationsCount; p++)
 	{
-		permutations[p] = generatePermutation(p, field, pieceMagicStructures[field].Mask);
+		permutations[p] = Permutations::Generate(p, field, pieceMagicStructures[field].Mask);
 		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
 	}
 
 	pieceMagicStructures[field].MagicNumber = generateMagicNumber(pieceMagicStructures[field], permutations, attacks);
-}
-
-U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64 mask)
-{
-	assert(permutationIndex >= 0);
-	assert(field >= 0 && field < 64);
-
-	U64 permutation = 0;
-	while (mask != 0)
-	{
-		U64 lsb = BitOperations::GetLSB(mask);
-		mask = BitOperations::PopLSB(mask);
-
-		if ((permutationIndex & 1) != 0)
-		{
-			int lsbIndex = BitOperations::BitScan(lsb);
-			permutation |= (U64)1 << lsbIndex;
-		}
-
-		permutationIndex >>= 1;
-	}
-
-	return permutation;
 }
 
 U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)

@@ -60,6 +60,9 @@
     <ClCompile Include="Source\BishopMasksGenerator.cpp">
       <Filter>Source Files\Masks</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Permutations.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\FastMagicBitboards.hpp">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Include\BishopMasksGenerator.hpp">
       <Filter>Header Files\Masks</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Permutations.hpp">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
