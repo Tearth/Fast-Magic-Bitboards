@@ -12,6 +12,9 @@
 #include "AttacksGeneratorBase.hpp"
 #include "RookAttacksGenerator.hpp"
 #include "BishopAttacksGenerator.hpp"
+#include "MasksGeneratorBase.hpp"
+#include "RookMasksGenerator.hpp"
+#include "BishopMasksGenerator.hpp"
 
 class FastMagicBitboards
 {
@@ -27,10 +30,7 @@ public:
 	Bitboard GetRookAttacks(int field, Bitboard occupancy);
 	Bitboard GetBishopAttacks(int field, Bitboard occupancy);
 private:
-	U64 generateRookMask(int field);
-	U64 generateBishopMask(int field);
-	U64 generateMaskForDirection(int field, int shift);
-	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator);
+	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
 	U64 generatePermutation(int permutationIndex, int field, U64 mask);
 	U64 generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
 
@@ -38,6 +38,9 @@ private:
 
 	std::array<MagicStructure, 64> _rookMagicStructures;
 	std::array<MagicStructure, 64> _bishopMagicStructures;
+
+	std::unique_ptr<MasksGeneratorBase> rookMasksGenerator;
+	std::unique_ptr<MasksGeneratorBase> bishopMasksGenerator;
 
 	std::unique_ptr<AttacksGeneratorBase> rookAttacksGenerator;
 	std::unique_ptr<AttacksGeneratorBase> bishopAttacksGenerator;

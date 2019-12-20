@@ -2,6 +2,9 @@
 
 FastMagicBitboards::FastMagicBitboards() : _randomGenerator(_randomDevice()), _randomDistribution(0, 0x3ffffffffffffff)
 {
+	rookMasksGenerator = std::make_unique<RookMasksGenerator>();
+	bishopMasksGenerator = std::make_unique<BishopMasksGenerator>();
+
 	rookAttacksGenerator = std::make_unique<RookAttacksGenerator>();
 	bishopAttacksGenerator = std::make_unique<BishopAttacksGenerator>();
 }
@@ -22,9 +25,7 @@ void FastMagicBitboards::GenerateForRook()
 void FastMagicBitboards::GenerateForRook(int field)
 {
 	assert(field >= 0 && field < 64);
-
-	_rookMagicStructures[field].Mask = generateRookMask(field);
-	calculateField(field, _rookMagicStructures, rookAttacksGenerator);
+	calculateField(field, _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
 }
 
 void FastMagicBitboards::GenerateForBishop()
@@ -38,9 +39,7 @@ void FastMagicBitboards::GenerateForBishop()
 void FastMagicBitboards::GenerateForBishop(int field)
 {
 	assert(field >= 0 && field < 64);
-
-	_bishopMagicStructures[field].Mask = generateBishopMask(field);
-	calculateField(field, _bishopMagicStructures, bishopAttacksGenerator);
+	calculateField(field, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
 }
 
 Bitboard FastMagicBitboards::GetRookAttacks(int field, Bitboard occupancy)
@@ -63,53 +62,10 @@ Bitboard FastMagicBitboards::GetBishopAttacks(int field, Bitboard occupancy)
 	return _bishopMagicStructures[field].MagicAttacks[occupancy];
 }
 
-U64 FastMagicBitboards::generateRookMask(int field)
+void FastMagicBitboards::calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
 	assert(field >= 0 && field < 64);
-
-	const U64 firstFile = 0x101010101010101;
-	const U64 firstRank = 0xff;
-	const U64 bitboardWithoutFirstAndLastFile = 0x7e7e7e7e7e7e7e7e;
-	const U64 bitboardWithoutFirstAndLastRank = 0xffffffffffff00;
-
-	U64 mask = 0;
-	mask |= (firstFile << BitboardOperations::FieldToFile(field)) & bitboardWithoutFirstAndLastRank;
-	mask |= (firstRank << (BitboardOperations::FieldToRank(field) * 8)) & bitboardWithoutFirstAndLastFile;
-	mask &= ~((U64)1 << field);
-
-	return mask;
-}
-
-U64 FastMagicBitboards::generateBishopMask(int field)
-{
-	assert(field >= 0 && field < 64);
-
-	U64 mask = 0;
-	mask |= generateMaskForDirection(field + 7, 7);
-	mask |= generateMaskForDirection(field - 7, -7);
-	mask |= generateMaskForDirection(field + 9, 9);
-	mask |= generateMaskForDirection(field - 9, -9);
-
-	return mask;
-}
-
-U64 FastMagicBitboards::generateMaskForDirection(int field, int shift)
-{
-	assert(shift != 0);
-
-	U64 mask = 0;
-	for (int i = BitboardOperations::DistanceToEdge(field, shift); i >= 0; i--)
-	{
-		mask |= (U64)1 << field;
-		field += shift;
-	}
-
-	return mask;
-}
-
-void FastMagicBitboards::calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator)
-{
-	assert(field >= 0 && field < 64);
+	pieceMagicStructures[field].Mask = masksGenerator->Generate(field);
 
 	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures[field].Mask);
 	auto permutations = std::make_unique<U64 []>(permutationsCount);
@@ -147,7 +103,7 @@ U64 FastMagicBitboards::generatePermutation(int permutationIndex, int field, U64
 	return permutation;
 }
 
-__declspec(noinline)  U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
+U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
 {
 	int attacksCount = 1 << BitOperations::Count(pieceMagicStructures.Mask);
 	int shift = BitOperations::Count(pieceMagicStructures.Mask);

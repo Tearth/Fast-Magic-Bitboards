@@ -25,6 +25,12 @@
     <Filter Include="Source Files\Attacks">
       <UniqueIdentifier>{c9db41e5-2495-4be4-a8ba-b230a96e379f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Masks">
+      <UniqueIdentifier>{a4e3fb9b-cc98-4746-934b-42b40ddf089e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Masks">
+      <UniqueIdentifier>{96b65fb4-d131-4da4-a4e3-f4746e889d08}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\FastMagicBitboards.cpp">
@@ -44,6 +50,15 @@
     </ClCompile>
     <ClCompile Include="Source\BitboardOperations.cpp">
       <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MasksGeneratorBase.cpp">
+      <Filter>Source Files\Masks</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\RookMasksGenerator.cpp">
+      <Filter>Source Files\Masks</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BishopMasksGenerator.cpp">
+      <Filter>Source Files\Masks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -70,6 +85,15 @@
     </ClInclude>
     <ClInclude Include="Include\BitboardOperations.hpp">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MasksGeneratorBase.hpp">
+      <Filter>Header Files\Masks</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\RookMasksGenerator.hpp">
+      <Filter>Header Files\Masks</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BishopMasksGenerator.hpp">
+      <Filter>Header Files\Masks</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
