@@ -20,7 +20,26 @@ void FastMagicBitboards::GenerateForRook()
 void FastMagicBitboards::GenerateForRook(int field)
 {
 	assert(field >= 0 && field < 64);
-	calculateField(field, _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
+
+	static int defaultRookShifts[64] =
+	{
+		12, 11, 11, 11, 11, 11, 11, 12,
+		11, 10, 10, 10, 10, 10, 10, 11,
+		11, 10, 10, 10, 10, 10, 10, 11,
+		11, 10, 10, 10, 10, 10, 10, 11,
+		11, 10, 10, 10, 10, 10, 10, 11,
+		11, 10, 10, 10, 10, 10, 10, 11,
+		11, 10, 10, 10, 10, 10, 10, 11,
+		12, 11, 11, 11, 11, 11, 11, 12
+	};
+
+	calculateField(field, defaultRookShifts[field], _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
+}
+
+void FastMagicBitboards::GenerateForRook(int field, int shift)
+{
+	assert(field >= 0 && field < 64);
+	calculateField(field, shift, _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
 }
 
 void FastMagicBitboards::GenerateForBishop()
@@ -34,7 +53,26 @@ void FastMagicBitboards::GenerateForBishop()
 void FastMagicBitboards::GenerateForBishop(int field)
 {
 	assert(field >= 0 && field < 64);
-	calculateField(field, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
+
+	static int defaultBishopShifts[64] =
+	{
+		6, 5, 5, 5, 5, 5, 5, 6,
+		5, 5, 5, 5, 5, 5, 5, 5,
+		5, 5, 7, 7, 7, 7, 5, 5,
+		5, 5, 7, 9, 9, 7, 5, 5,
+		5, 5, 7, 9, 9, 7, 5, 5,
+		5, 5, 7, 7, 7, 7, 5, 5,
+		5, 5, 5, 5, 5, 5, 5, 5,
+		6, 5, 5, 5, 5, 5, 5, 6
+	};
+
+	calculateField(field, defaultBishopShifts[field], _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
+}
+
+void FastMagicBitboards::GenerateForBishop(int field, int shift)
+{
+	assert(field >= 0 && field < 64);
+	calculateField(field, shift, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
 }
 
 U64 FastMagicBitboards::GetRookAttacks(int field, U64 occupancy)
@@ -57,7 +95,7 @@ U64 FastMagicBitboards::GetBishopAttacks(int field, U64 occupancy)
 	return _bishopMagicStructures[field].MagicAttacks[occupancy];
 }
 
-void FastMagicBitboards::calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
+void FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
 	assert(field >= 0 && field < 64);
 	pieceMagicStructures[field].Mask = masksGenerator->Generate(field);
@@ -72,22 +110,22 @@ void FastMagicBitboards::calculateField(int field, std::array<MagicStructure, 64
 		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
 	}
 
-	pieceMagicStructures[field].MagicNumber = generateMagicNumber(pieceMagicStructures[field], permutations, attacks);
+	pieceMagicStructures[field].MagicNumber = generateMagicNumber(shift, pieceMagicStructures[field], permutations, attacks);
 }
 
-U64 FastMagicBitboards::generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
+U64 FastMagicBitboards::generateMagicNumber(int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
 {
 	int attacksCount = 1 << BitOperations::Count(pieceMagicStructures.Mask);
-	int shift = BitOperations::Count(pieceMagicStructures.Mask);
+	int magicAttacksCount = 1 << shift;
 
 	pieceMagicStructures.Shift = 64 - shift;
-	pieceMagicStructures.MagicAttacks = std::make_unique<U64[]>((int)(1 << shift));
+	pieceMagicStructures.MagicAttacks = std::make_unique<U64[]>(magicAttacksCount);
 
 	bool success = false;
 	while (!success)
 	{
 		U64 magicNumber = randU64() & randU64() & randU64();
-		memset(pieceMagicStructures.MagicAttacks.get(), 0, attacksCount * sizeof(U64));
+		memset(pieceMagicStructures.MagicAttacks.get(), 0, magicAttacksCount * sizeof(U64));
 
 		success = true;
 		for (int i = 0; i < attacksCount; i++)

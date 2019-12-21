@@ -24,14 +24,16 @@ public:
 
 	void GenerateForRook();
 	void GenerateForRook(int field);
+	void GenerateForRook(int field, int shift);
 	void GenerateForBishop();
 	void GenerateForBishop(int field);
+	void GenerateForBishop(int field, int shift);
 
 	U64 GetRookAttacks(int field, U64 occupancy);
 	U64 GetBishopAttacks(int field, U64 occupancy);
 private:
-	void calculateField(int field, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
-	U64 generateMagicNumber(MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
+	void calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
+	U64 generateMagicNumber(int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
 
 	U64 randU64();
 
