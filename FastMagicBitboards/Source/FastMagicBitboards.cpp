@@ -17,7 +17,7 @@ void FastMagicBitboards::GenerateForRook()
 	}
 }
 
-void FastMagicBitboards::GenerateForRook(int field)
+U64 FastMagicBitboards::GenerateForRook(int field)
 {
 	assert(field >= 0 && field < 64);
 
@@ -33,13 +33,13 @@ void FastMagicBitboards::GenerateForRook(int field)
 		12, 11, 11, 11, 11, 11, 11, 12
 	};
 
-	calculateField(field, defaultRookShifts[field], _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
+	return calculateField(field, defaultRookShifts[field], _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
 }
 
-void FastMagicBitboards::GenerateForRook(int field, int shift)
+U64 FastMagicBitboards::GenerateForRook(int field, int shift)
 {
 	assert(field >= 0 && field < 64);
-	calculateField(field, shift, _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
+	return calculateField(field, shift, _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
 }
 
 void FastMagicBitboards::GenerateForBishop()
@@ -50,7 +50,7 @@ void FastMagicBitboards::GenerateForBishop()
 	}
 }
 
-void FastMagicBitboards::GenerateForBishop(int field)
+U64 FastMagicBitboards::GenerateForBishop(int field)
 {
 	assert(field >= 0 && field < 64);
 
@@ -66,13 +66,13 @@ void FastMagicBitboards::GenerateForBishop(int field)
 		6, 5, 5, 5, 5, 5, 5, 6
 	};
 
-	calculateField(field, defaultBishopShifts[field], _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
+	return calculateField(field, defaultBishopShifts[field], _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
 }
 
-void FastMagicBitboards::GenerateForBishop(int field, int shift)
+U64 FastMagicBitboards::GenerateForBishop(int field, int shift)
 {
 	assert(field >= 0 && field < 64);
-	calculateField(field, shift, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
+	return calculateField(field, shift, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
 }
 
 U64 FastMagicBitboards::GetRookAttacks(int field, U64 occupancy)
@@ -95,7 +95,7 @@ U64 FastMagicBitboards::GetBishopAttacks(int field, U64 occupancy)
 	return _bishopMagicStructures[field].MagicAttacks[occupancy];
 }
 
-void FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
+U64 FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
 	assert(field >= 0 && field < 64);
 	pieceMagicStructures[field].Mask = masksGenerator->Generate(field);
@@ -111,6 +111,7 @@ void FastMagicBitboards::calculateField(int field, int shift, std::array<MagicSt
 	}
 
 	pieceMagicStructures[field].MagicNumber = generateMagicNumber(shift, pieceMagicStructures[field], permutations, attacks);
+	return pieceMagicStructures[field].MagicNumber;
 }
 
 U64 FastMagicBitboards::generateMagicNumber(int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
