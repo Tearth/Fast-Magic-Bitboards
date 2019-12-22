@@ -16,6 +16,7 @@
 #include "RookMasksGenerator.hpp"
 #include "BishopMasksGenerator.hpp"
 #include "Permutations.hpp"
+#include "PersistentMagicStructure.hpp"
 
 class FastMagicBitboards
 {
@@ -31,6 +32,8 @@ public:
 
 	U64 GetRookAttacks(int field, U64 occupancy);
 	U64 GetBishopAttacks(int field, U64 occupancy);
+
+	std::array<PersistentMagicStructure, 128> GetMagicStructures();
 private:
 	U64 calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
 	U64 generateMagicNumber(int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);

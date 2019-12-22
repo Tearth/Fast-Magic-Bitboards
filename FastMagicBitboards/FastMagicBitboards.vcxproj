@@ -37,6 +37,7 @@
     <ClInclude Include="Include\MagicStructure.hpp" />
     <ClInclude Include="Include\MasksGeneratorBase.hpp" />
     <ClInclude Include="Include\Permutations.hpp" />
+    <ClInclude Include="Include\PersistentMagicStructure.hpp" />
     <ClInclude Include="Include\RookMasksGenerator.hpp" />
     <ClInclude Include="Include\Typedefs.hpp" />
     <ClInclude Include="Include\AttacksGeneratorBase.hpp" />

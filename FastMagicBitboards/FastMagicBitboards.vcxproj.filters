@@ -101,5 +101,8 @@
     <ClInclude Include="Include\Permutations.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Include\PersistentMagicStructure.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

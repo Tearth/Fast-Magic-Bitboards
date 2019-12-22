@@ -95,6 +95,21 @@ U64 FastMagicBitboards::GetBishopAttacks(int field, U64 occupancy)
 	return _bishopMagicStructures[field].MagicAttacks[occupancy];
 }
 
+std::array<PersistentMagicStructure, 128> FastMagicBitboards::GetMagicStructures()
+{
+	std::array<PersistentMagicStructure, 128> persistentMagicStructures;
+	for (int i = 0; i < 64; i++)
+	{
+		persistentMagicStructures[i].MagicNumber = _rookMagicStructures[i].MagicNumber;
+		persistentMagicStructures[i].Shift = _rookMagicStructures[i].Shift;
+
+		persistentMagicStructures[i + 64].MagicNumber = _bishopMagicStructures[i].MagicNumber;
+		persistentMagicStructures[i + 64].Shift = _bishopMagicStructures[i].Shift;
+	}
+
+	return persistentMagicStructures;
+}
+
 U64 FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
 	assert(field >= 0 && field < 64);
