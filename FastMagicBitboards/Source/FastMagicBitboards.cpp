@@ -33,13 +33,13 @@ U64 FastMagicBitboards::GenerateForRook(int field)
 		12, 11, 11, 11, 11, 11, 11, 12
 	};
 
-	return calculateField(field, defaultRookShifts[field], _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
+	return calculateField(field, defaultRookShifts[field], _rookMagicStructures[field], rookAttacksGenerator, rookMasksGenerator);
 }
 
 U64 FastMagicBitboards::GenerateForRook(int field, int shift)
 {
 	assert(field >= 0 && field < 64);
-	return calculateField(field, shift, _rookMagicStructures, rookAttacksGenerator, rookMasksGenerator);
+	return calculateField(field, shift, _rookMagicStructures[field], rookAttacksGenerator, rookMasksGenerator);
 }
 
 void FastMagicBitboards::GenerateForBishop()
@@ -66,13 +66,13 @@ U64 FastMagicBitboards::GenerateForBishop(int field)
 		6, 5, 5, 5, 5, 5, 5, 6
 	};
 
-	return calculateField(field, defaultBishopShifts[field], _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
+	return calculateField(field, defaultBishopShifts[field], _bishopMagicStructures[field], bishopAttacksGenerator, bishopMasksGenerator);
 }
 
 U64 FastMagicBitboards::GenerateForBishop(int field, int shift)
 {
 	assert(field >= 0 && field < 64);
-	return calculateField(field, shift, _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator);
+	return calculateField(field, shift, _bishopMagicStructures[field], bishopAttacksGenerator, bishopMasksGenerator);
 }
 
 U64 FastMagicBitboards::GetRookAttacks(int field, U64 occupancy)
@@ -114,8 +114,8 @@ bool FastMagicBitboards::SetMagicStructures(std::array<PersistentMagicStructure,
 {
 	for (int i = 0; i < 64; i++)
 	{
-		if (!calculateField(i, persistentMagicStructures[i], _rookMagicStructures,rookAttacksGenerator, rookMasksGenerator) ||
-			!calculateField(i, persistentMagicStructures[i + 64], _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator))
+		if (!calculateField(i, persistentMagicStructures[i], _rookMagicStructures[i], rookAttacksGenerator, rookMasksGenerator) ||
+			!calculateField(i, persistentMagicStructures[i + 64], _bishopMagicStructures[i], bishopAttacksGenerator, bishopMasksGenerator))
 		{
 			return false;
 		}
@@ -124,40 +124,38 @@ bool FastMagicBitboards::SetMagicStructures(std::array<PersistentMagicStructure,
 	return true;
 }
 
-U64 FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
+U64 FastMagicBitboards::calculateField(int field, int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
-	assert(field >= 0 && field < 64);
-	pieceMagicStructures[field].Mask = masksGenerator->Generate(field);
+	pieceMagicStructures.Mask = masksGenerator->Generate(field);
 
-	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures[field].Mask);
+	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures.Mask);
 	auto permutations = std::make_unique<U64 []>(permutationsCount);
 	auto attacks = std::make_unique<U64[]>(permutationsCount);
 
 	for (int p = 0; p < permutationsCount; p++)
 	{
-		permutations[p] = Permutations::Generate(p, field, pieceMagicStructures[field].Mask);
+		permutations[p] = Permutations::Generate(p, field, pieceMagicStructures.Mask);
 		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
 	}
 
-	pieceMagicStructures[field].MagicNumber = generateMagicNumber(shift, pieceMagicStructures[field], permutations, attacks);
-	return pieceMagicStructures[field].MagicNumber;
+	pieceMagicStructures.MagicNumber = generateMagicNumber(shift, pieceMagicStructures, permutations, attacks);
+	return pieceMagicStructures.MagicNumber;
 }
 
-bool FastMagicBitboards::calculateField(int field, PersistentMagicStructure persistentMagicStructure, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
+bool FastMagicBitboards::calculateField(int field, PersistentMagicStructure &persistentMagicStructure, MagicStructure &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
-	assert(field >= 0 && field < 64);
-	pieceMagicStructures[field].Mask = masksGenerator->Generate(field);
-	pieceMagicStructures[field].Shift = persistentMagicStructure.Shift;
-	pieceMagicStructures[field].MagicNumber = persistentMagicStructure.MagicNumber;
-	pieceMagicStructures[field].MagicAttacks = std::make_unique<U64[]>(1 << (64 - persistentMagicStructure.Shift));
+	pieceMagicStructures.Mask = masksGenerator->Generate(field);
+	pieceMagicStructures.Shift = persistentMagicStructure.Shift;
+	pieceMagicStructures.MagicNumber = persistentMagicStructure.MagicNumber;
+	pieceMagicStructures.MagicAttacks = std::make_unique<U64[]>(1 << (64 - persistentMagicStructure.Shift));
 
-	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures[field].Mask);
+	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures.Mask);
 	auto permutations = std::make_unique<U64[]>(permutationsCount);
 	auto attacks = std::make_unique<U64[]>(permutationsCount);
 
 	for (int p = 0; p < permutationsCount; p++)
 	{
-		permutations[p] = Permutations::Generate(p, field, pieceMagicStructures[field].Mask);
+		permutations[p] = Permutations::Generate(p, field, pieceMagicStructures.Mask);
 		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
 	}
 
@@ -166,12 +164,12 @@ bool FastMagicBitboards::calculateField(int field, PersistentMagicStructure pers
 		U64 hash = permutations[i] * persistentMagicStructure.MagicNumber;
 		int index = (int)(hash >> persistentMagicStructure.Shift);
 
-		if (pieceMagicStructures[field].MagicAttacks[index] != 0 && pieceMagicStructures[field].MagicAttacks[index] != attacks[i])
+		if (pieceMagicStructures.MagicAttacks[index] != 0 && pieceMagicStructures.MagicAttacks[index] != attacks[i])
 		{
 			return false;
 		}
 
-		pieceMagicStructures[field].MagicAttacks[index] = attacks[i];
+		pieceMagicStructures.MagicAttacks[index] = attacks[i];
 	}
 
 	return true;

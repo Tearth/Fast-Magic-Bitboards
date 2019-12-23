@@ -36,8 +36,8 @@ public:
 	std::array<PersistentMagicStructure, 128> GetMagicStructures();
 	bool SetMagicStructures(std::array<PersistentMagicStructure, 128> persistentMagicStructures);
 private:
-	U64 calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
-	bool calculateField(int field, PersistentMagicStructure persistentMagicStructure, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
+	U64 calculateField(int field, int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
+	bool calculateField(int field, PersistentMagicStructure &persistentMagicStructure, MagicStructure &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator);
 	U64 generateMagicNumber(int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<U64[]> &permutations, std::unique_ptr<U64[]> &attacks);
 
 	U64 randU64();
