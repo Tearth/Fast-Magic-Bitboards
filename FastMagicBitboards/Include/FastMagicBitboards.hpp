@@ -30,18 +30,18 @@ public:
 	*/
 	void GenerateForRook();
 
-	//! Generates magic numbers for rooks at the specified field.
+	//! Generates magic numbers for rooks on the specified field.
 	/*!
-		Generates magic numbers for rooks at the specified field and stores them in the internal structure. They can be obtained by
+		Generates magic numbers for rooks on the specified field and stores them in the internal structure. They can be obtained by
 		calling GetMagicStructures method. It usually takes a few hundred milliseconds.
 		\param field Field index for which the magic number will be calculated.
 		\return Magic number calculated for the specified field.
 	*/
 	U64 GenerateForRook(int field);
 
-	//! Generates magic numbers for rooks at the specified field and shift.
+	//! Generates magic numbers for rooks on the specified field and shift.
 	/*!
-		Generates magic numbers for rooks at the specified field, shift and stores them in the internal structure. They can be obtained by
+		Generates magic numbers for rooks on the specified field, shift and stores them in the internal structure. They can be obtained by
 		calling GetMagicStructures method. It usually takes a few hundred milliseconds.
 		\param field Field index for which the magic number will be calculated.
 		\param shift Shift used to prepare attacks table. The smaller value will require a smaller table.
@@ -56,18 +56,18 @@ public:
 	*/
 	void GenerateForBishop();
 
-	//! Generates magic numbers for bishops at the specified field.
+	//! Generates magic numbers for bishops on the specified field.
 	/*!
-		Generates magic numbers for bishops at the specified field and stores them in the internal structure. They can be obtained by
+		Generates magic numbers for bishops on the specified field and stores them in the internal structure. They can be obtained by
 		calling GetMagicStructures method. It usually takes a few hundred milliseconds.
 		\param field Field index for which the magic number will be calculated.
 		\return Magic number calculated for the specified field.
 	*/
 	U64 GenerateForBishop(int field);
 
-	//! Generates magic numbers for bishops at the specified field and shift.
+	//! Generates magic numbers for bishops on the specified field and shift.
 	/*!
-		Generates magic numbers for bishops at the specified field, shift and stores them in the internal structure. They can be obtained by
+		Generates magic numbers for bishops on the specified field, shift and stores them in the internal structure. They can be obtained by
 		calling GetMagicStructures method. It usually takes a few hundred milliseconds.
 		\param field Field index for which the magic number will be calculated.
 		\param shift Shift used to prepare attacks table. The smaller value will require a smaller table.
