@@ -91,7 +91,7 @@ U64 FastMagicBitboards::GetBishopAttacks(int field, U64 occupancy)
 
 	occupancy &= _bishopMagicStructures[field].Mask;
 	occupancy *= _bishopMagicStructures[field].MagicNumber;
-	occupancy >>= _rookMagicStructures[field].Shift;
+	occupancy >>= _bishopMagicStructures[field].Shift;
 	return _bishopMagicStructures[field].MagicAttacks[occupancy];
 }
 

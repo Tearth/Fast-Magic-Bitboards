@@ -10,6 +10,5 @@ U64 BishopMasksGenerator::Generate(int field)
 	mask |= generateMaskForDirection(field, 9);
 	mask |= generateMaskForDirection(field, -9);
 
-	mask &= ~((U64)1 << field);
 	return mask;
 }
