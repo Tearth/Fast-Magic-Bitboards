@@ -1,13 +1,14 @@
 #include <iostream>
 #include <chrono>
+#include <string>
 #include <FastMagicBitboards.hpp>
-#include <BitOperations.hpp>
 
 using namespace std;
 using namespace std::chrono;
 
-void testRook(int field, U64 occupaction, U64 expectedResult);
-void testBishop(int field, U64 occupaction, U64 expectedResult);
+void testRook(int field, U64 occupacion, U64 expectedResult);
+void testBishop(int field, U64 occupacion, U64 expectedResult);
+void printError(string pieceName, int field, U64 occupacion, U64 result, U64 expectedResult);
 
 FastMagicBitboards fastBitboards;
 
@@ -34,24 +35,27 @@ int main()
 	}
 }
 
-void testRook(int field, U64 occupaction, U64 expectedResult)
+void testRook(int field, U64 occupacion, U64 expectedResult)
 {
-	U64 result = fastBitboards.GetRookAttacks(field, occupaction);
+	U64 result = fastBitboards.GetRookAttacks(field, occupacion);
 	if (result != expectedResult)
 	{
-		cout << "Invalid result for rook: field=" << field << ", occupacion=" << occupaction << endl;
-		cout << "  - result=" << result << endl;
-		cout << "  - expected result=" << expectedResult << endl;
+		printError("rook", field, occupacion, result, expectedResult);
 	}
 }
 
-void testBishop(int field, U64 occupaction, U64 expectedResult)
+void testBishop(int field, U64 occupacion, U64 expectedResult)
 {
-	U64 result = fastBitboards.GetBishopAttacks(field, occupaction);
+	U64 result = fastBitboards.GetBishopAttacks(field, occupacion);
 	if (result != expectedResult)
 	{
-		cout << "Invalid result for bishop: field=" << field << ", occupacion=" << occupaction << endl;
-		cout << "  - result=" << result << endl;
-		cout << "  - expected result=" << expectedResult << endl;
+		printError("bishop", field, occupacion, result, expectedResult);
 	}
+}
+
+void printError(string pieceName, int field, U64 occupacion, U64 result, U64 expectedResult)
+{
+	cout << "Invalid result for " << pieceName << ": field = " << field << ", occupacion = " << occupacion << endl;
+	cout << "  - result = " << result << endl;
+	cout << "  - expected result = " << expectedResult << endl;
 }

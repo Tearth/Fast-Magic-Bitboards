@@ -147,7 +147,7 @@ bool FastMagicBitboards::calculateField(int field, PersistentMagicStructure &per
 	pieceMagicStructures.Mask = masksGenerator->Generate(field);
 	pieceMagicStructures.Shift = persistentMagicStructure.Shift;
 	pieceMagicStructures.MagicNumber = persistentMagicStructure.MagicNumber;
-	pieceMagicStructures.MagicAttacks = std::make_unique<U64[]>(1 << (64 - persistentMagicStructure.Shift));
+	pieceMagicStructures.MagicAttacks = std::make_unique<U64[]>((U64)1 << (64 - persistentMagicStructure.Shift));
 
 	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures.Mask);
 	auto permutations = std::make_unique<U64[]>(permutationsCount);
