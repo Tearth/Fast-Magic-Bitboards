@@ -19,6 +19,8 @@ For i5 8300h CPU, it takes about 400 milliseconds to generate all magic numbers 
   - `bool SetMagicStructures(std::array<PersistentMagicStructure, 128> persistentMagicStructures)` - sets magic numbers and shifts.
 
 ## Example app
+Values passed in the `testRook` and `testBishop` functions have been created using [Bitboard Calculator](http://cinnamonchess.altervista.org/bitboard_calculator/Calc.html).
+
 ```cpp
 #include <iostream>
 #include <chrono>
