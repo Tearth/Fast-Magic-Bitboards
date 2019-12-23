@@ -110,6 +110,20 @@ std::array<PersistentMagicStructure, 128> FastMagicBitboards::GetMagicStructures
 	return persistentMagicStructures;
 }
 
+bool FastMagicBitboards::SetMagicStructures(std::array<PersistentMagicStructure, 128> persistentMagicStructures)
+{
+	for (int i = 0; i < 64; i++)
+	{
+		if (!calculateField(i, persistentMagicStructures[i], _rookMagicStructures,rookAttacksGenerator, rookMasksGenerator) ||
+			!calculateField(i, persistentMagicStructures[i + 64], _bishopMagicStructures, bishopAttacksGenerator, bishopMasksGenerator))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 U64 FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
 {
 	assert(field >= 0 && field < 64);
@@ -127,6 +141,40 @@ U64 FastMagicBitboards::calculateField(int field, int shift, std::array<MagicStr
 
 	pieceMagicStructures[field].MagicNumber = generateMagicNumber(shift, pieceMagicStructures[field], permutations, attacks);
 	return pieceMagicStructures[field].MagicNumber;
+}
+
+bool FastMagicBitboards::calculateField(int field, PersistentMagicStructure persistentMagicStructure, std::array<MagicStructure, 64> &pieceMagicStructures, std::unique_ptr<AttacksGeneratorBase> &attacksGenerator, std::unique_ptr<MasksGeneratorBase> &masksGenerator)
+{
+	assert(field >= 0 && field < 64);
+	pieceMagicStructures[field].Mask = masksGenerator->Generate(field);
+	pieceMagicStructures[field].Shift = persistentMagicStructure.Shift;
+	pieceMagicStructures[field].MagicNumber = persistentMagicStructure.MagicNumber;
+	pieceMagicStructures[field].MagicAttacks = std::make_unique<U64[]>(1 << (64 - persistentMagicStructure.Shift));
+
+	int permutationsCount = 1 << BitOperations::Count(pieceMagicStructures[field].Mask);
+	auto permutations = std::make_unique<U64[]>(permutationsCount);
+	auto attacks = std::make_unique<U64[]>(permutationsCount);
+
+	for (int p = 0; p < permutationsCount; p++)
+	{
+		permutations[p] = Permutations::Generate(p, field, pieceMagicStructures[field].Mask);
+		attacks[p] = attacksGenerator->Generate(field, permutations[p]);
+	}
+
+	for (int i = 0; i < permutationsCount; i++)
+	{
+		U64 hash = permutations[i] * persistentMagicStructure.MagicNumber;
+		int index = (int)(hash >> persistentMagicStructure.Shift);
+
+		if (pieceMagicStructures[field].MagicAttacks[index] != 0 && pieceMagicStructures[field].MagicAttacks[index] != attacks[i])
+		{
+			return false;
+		}
+
+		pieceMagicStructures[field].MagicAttacks[index] = attacks[i];
+	}
+
+	return true;
 }
 
 U64 FastMagicBitboards::generateMagicNumber(int shift, MagicStructure &pieceMagicStructures, std::unique_ptr<U64 []> &permutations, std::unique_ptr<U64[]> &attacks)
